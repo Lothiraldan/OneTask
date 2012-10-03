@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+import sys
+import argparse
+from time import time
+from pymongo import Connection
+
+collection = Connection()['onetask']['onetask']
+
+# Commands
+
+
+def add(task):
+    collection.save({'message': task})
+    print "Task added"
+
+
+def get():
+    selected_task = collection.find_one({'selected': True,
+        'done': {'$exists': False}})
+
+    if not selected_task:
+        selected_task = collection.find_one({'done': {'$exists': False}})
+
+        if not selected_task:
+            print 'No task'
+            return
+        selected_task['selected'] = True
+        collection.save(selected_task)
+
+    print selected_task['message']
+
+
+def done():
+    selected_task = collection.find_one({'selected': True,
+        'done': {'$exists': False}})
+
+    if not selected_task:
+        print 'No task choosed'
+        return
+
+    collection.update({'_id': selected_task['_id']},
+        {'$set': {'done': int(time())},
+         '$unset': {'selected': 1}})
+    print "Task is marked as done"
+
+# Parser
+
+parser = argparse.ArgumentParser(description='OneTask cli.')
+
+subparsers = parser.add_subparsers(help='command helps')
+
+add_subparser = subparsers.add_parser('add', help='add command help')
+add_subparser.add_argument('task', type=str, help='task message')
+add_subparser.set_defaults(func=add)
+
+get_subparser = subparsers.add_parser('get', help='get command help')
+get_subparser.set_defaults(func=get)
+
+done_subparser = subparsers.add_parser('done', help='done command help')
+done_subparser.set_defaults(func=done)
+
+args = parser.parse_args(sys.argv[1:])
+
+# Commands
+if args.func == add:
+    args.func(args.task)
+else:
+    args.func()
