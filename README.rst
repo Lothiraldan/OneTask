@@ -30,13 +30,14 @@ Features
 --------
 
 - OneTask has **no** synchronization between multiple devices.
-- OneTask has **no** a web interface.
+- OneTask has **no** web interface.
 - OneTask has **no** web API.
 - OneTask has **no** social features.
 - OneTask has **no** collaboration features.
 - OneTask has **no** GUI.
 - OneTask has **no** cofee maker capability.
 - OneTask has **no** speech-to-text feature.
+- OneTask has **no** text-to-speech feature.
 - OneTask has **no** other todo manager export/import.
 - OneTask has **no** task search option.
 - OneTask has **no** deadline features.
@@ -50,4 +51,4 @@ Features
 - OneTask has **no** alerts.
 - OneTask has **no** tasks.
 
-OneTask is a minimalist task manager and that just fine.
+OneTask is a minimalist task manager and that's just fine.
