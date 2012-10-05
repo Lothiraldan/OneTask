@@ -35,7 +35,7 @@ Features
 - OneTask has **no** social features.
 - OneTask has **no** collaboration features.
 - OneTask has **no** GUI.
-- OneTask has **no** cofee maker capacity.
+- OneTask has **no** cofee maker capability.
 - OneTask has **no** speech-to-text feature.
 - OneTask has **no** other todo manager export/import.
 - OneTask has **no** task search option.
