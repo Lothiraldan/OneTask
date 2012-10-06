@@ -6,5 +6,6 @@ setup(
     license='MIT License',
     long_description='Manage your tasks, one task at a time',
     requires=[],
-    scripts=['onetask']
+    packages=['onetask'],
+    scripts=['onetask/onetask']
 )

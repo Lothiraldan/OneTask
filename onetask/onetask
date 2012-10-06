@@ -5,8 +5,8 @@ import sys
 import argparse
 import unittest
 
-from collection import TaskCollection, TaskError
-from tests import TaskCollectionTest
+from onetask.collection import TaskCollection, TaskError
+from onetask.tests import TaskCollectionTest
 
 
 TASKS_DATABASE = os.path.expanduser('~/.OneTask.json')
