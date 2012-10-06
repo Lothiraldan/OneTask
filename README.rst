@@ -41,6 +41,14 @@ If you try to get another task, you will get the same one.
     $> onetask get
     Empty task list.
 
+Sometimes you may want to comtemplate done work:
+
+    $> onetask history
+
+That can give some nice output like the one below:
+
+![](http://cl.ly/image/3Y3c0w071y14/Capture%20d%E2%80%99%C3%A9cran%202012-10-06%20%C3%A0%2022.38.36.png)
+
 Tests
 -----
 
