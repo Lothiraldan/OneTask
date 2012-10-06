@@ -3,11 +3,18 @@
 import os
 import sys
 import argparse
+import unittest
 
 from collection import TaskCollection, TaskError
+from tests import TaskCollectionTest
 
 
 TASKS_DATABASE = os.path.expanduser('~/.OneTask.json')
+
+
+def test():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TaskCollectionTest)
+    unittest.TextTestRunner(verbosity=1).run(suite)
 
 
 def get_args(args_list):
@@ -24,6 +31,9 @@ def get_args(args_list):
     done_subparser = subparsers.add_parser('done',
         help='mark active task as done')
     done_subparser.set_defaults(func=tasks.done)
+    test_subparser = subparsers.add_parser('test',
+        help='launch test suite')
+    test_subparser.set_defaults(func=test)
     if len(args_list) == 0:
         return parser.print_help()
     else:

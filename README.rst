@@ -9,7 +9,7 @@ QuickStart
 - Add a task::
 
     $> onetask add 'Create onetask'
-    Task added
+    Task "Create onetask" added
 
 - Get a random task::
 
@@ -21,10 +21,19 @@ If you try to get another task, you will get the same one.
 - Mark current task as done::
 
     $> onetask done
-    Task is marked as done
+    Task "Create onetask" marked as done
 
     $> onetask get
-    No task
+    Empty task list.
+
+Tests
+-----
+
+To run OneTask's test suite, a dedicated command is available:
+
+    $> onetask test
+
+In case something fails, feel free to [open an issue about it](https://github.com/Lothiraldan/OneTask/issues/new).
 
 Features
 --------
