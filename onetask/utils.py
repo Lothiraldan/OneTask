@@ -37,7 +37,8 @@ def pprinttable(rows):
         headers = rows[0]._fields
         lens = []
         for i in range(len(rows[0])):
-            lens.append(len(max([x[i] for x in rows] + [headers[i]], key=lambda x: len(str(x)))))
+            lens.append(len(max([x[i] for x in rows] + [headers[i]],
+                key=lambda x: len(str(x)))))
         formats = []
         hformats = []
         for i in range(len(rows[0])):

@@ -116,6 +116,11 @@ class TaskCollection(object):
         if self.stdout is not None:
             self.stdout.write("%s\n" % message)
 
+    def skip(self):
+        "Skips current active task."
+        # XXX
+        pass
+
     def update_db(self):
         "Updates the task db with current data."
         try:
