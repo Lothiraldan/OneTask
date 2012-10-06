@@ -5,8 +5,8 @@ import sys
 import argparse
 import unittest
 
-from onetask.collection import TaskCollection, TaskError
-from onetask.tests import TaskCollectionTest
+from collection import TaskCollection, TaskError
+from tests import TaskCollectionTest
 
 
 TASKS_DATABASE = os.path.expanduser('~/.OneTask.json')
@@ -28,9 +28,15 @@ def get_args(args_list):
     get_subparser = subparsers.add_parser('get',
         help='display currently active task')
     get_subparser.set_defaults(func=tasks.get)
+    history_subparser = subparsers.add_parser('history',
+        help='display tasks completion history')
+    history_subparser.set_defaults(func=tasks.history)
     done_subparser = subparsers.add_parser('done',
         help='mark active task as done')
     done_subparser.set_defaults(func=tasks.done)
+    skip_subparser = subparsers.add_parser('skip',
+        help='skip current active task')
+    skip_subparser.set_defaults(func=tasks.skip)
     test_subparser = subparsers.add_parser('test',
         help='launch test suite')
     test_subparser.set_defaults(func=test)
