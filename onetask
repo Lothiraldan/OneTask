@@ -11,16 +11,22 @@ from random import shuffle
 TASKS_DATABASE = os.path.expanduser('~/.OneTask.json')
 
 
-class TaskCollection(object):
+class TaskError(RuntimeError):
+    pass
+
+
+class TaskCollection(deque):
     """Tasks collection object."""
+
     def __init__(self, db_path):
         self.db_path = db_path
         # load tasks
         try:
-            self.tasks = deque(json.load(open(self.db_path, 'r')))
+            tasks_list = json.load(open(self.db_path, 'r'))
         except (IOError, ValueError,), err:
-            self.err(u"Unable to load tasks from %s: %s"
+            self.err(u"Unable to load tasks from db %s: %s"
                      % (self.db_path, err,), 1)
+        super(TaskCollection, self).__init__(tasks_list)
 
     @classmethod
     def load(cls, db_path):
@@ -54,29 +60,29 @@ class TaskCollection(object):
 
     def add(self, task):
         "Adds a new task to the collection while keeping current active one."
-        if task in self.tasks:
+        if task in self:
             self.err(u'Task "%s" already exists.' % task)
-        if len(self.tasks) > 0:
+        if len(self) > 0:
             # pop current active task
-            active = self.tasks.popleft()
+            active = self.popleft()
             # shuffle rest
-            shuffle(self.tasks)
+            shuffle(self)
             # add new task
-            self.tasks.append(task)
+            self.append(task)
             # restore active tasks
-            self.tasks.appendleft(active)
+            self.appendleft(active)
         else:
-            self.tasks = deque([task])
+            self.append(task)
         self.update_db()
         print u'Task "%s" added' % task
 
     def done(self):
         "Marks current active task as done."
         try:
-            task = self.tasks.popleft()
+            task = self.popleft()
         except IndexError:
             return self.err(u"Empty task list.", 1)
-        shuffle(self.tasks)
+        shuffle(self)
         self.update_db()
         print u'Task "%s" marked as done' % task
 
@@ -88,22 +94,18 @@ class TaskCollection(object):
 
     def get(self):
         "Retrieves current active task."
-        if len(self.tasks) == 0:
+        if len(self) == 0:
             self.err(u"No tasks.")
-        print self.tasks[0]
+        print self[0]
 
     def update_db(self):
         "Updates the task db with current data."
         db_file = open(self.db_path, 'w')
-        db_file.write(json.dumps(list(self.tasks)))
+        db_file.write(json.dumps(list(self)))
         db_file.close()
 
 
-if __name__ == '__main__':
-    tasks = TaskCollection.load(TASKS_DATABASE)
-
-    # Parser
-
+def get_args(args_list):
     parser = argparse.ArgumentParser(description='OneTask cli.')
 
     subparsers = parser.add_subparsers(help='command helps')
@@ -118,7 +120,11 @@ if __name__ == '__main__':
     done_subparser = subparsers.add_parser('done', help='done command help')
     done_subparser.set_defaults(func=tasks.done)
 
-    args = parser.parse_args(sys.argv[1:])
+    return parser.parse_args(args_list)
+
+if __name__ == '__main__':
+    tasks = TaskCollection.load(TASKS_DATABASE)
+    args = get_args(sys.argv[1:])
 
     # Commands
     if args.func == tasks.add:
