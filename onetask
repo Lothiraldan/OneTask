@@ -30,7 +30,7 @@ def get_args(args_list):
         return parser.parse_args(args_list)
 
 if __name__ == '__main__':
-    tasks = TaskCollection.load(TASKS_DATABASE)
+    tasks = TaskCollection.load(TASKS_DATABASE, stdout=sys.stdout)
     args = get_args(sys.argv[1:])
     try:
         if args.func == tasks.add:

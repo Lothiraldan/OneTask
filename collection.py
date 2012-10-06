@@ -12,8 +12,12 @@ class TaskError(RuntimeError):
 class TaskCollection(deque):
     """Tasks collection object."""
 
-    def __init__(self, db_path):
+    def __init__(self, db_path, stdout=None):
+        assert os.path.exists(db_path)
         self.db_path = db_path
+        if stdout is not None:
+            assert "write" in dir(stdout)
+        self.stdout = stdout
         # load tasks
         try:
             tasks_list = json.load(open(self.db_path, 'r'))
@@ -23,17 +27,18 @@ class TaskCollection(deque):
         super(TaskCollection, self).__init__(tasks_list)
 
     @classmethod
-    def load(cls, db_path):
+    def load(cls, db_path, **kwargs):
         """Configures and returns a collection instance from a db file.
         Asks the user to creates a new db file if none has been found.
         """
         if os.path.exists(db_path):
-            return cls(db_path)
+            return cls(db_path, **kwargs)
         print u"No OneTask database file found at %s" % db_path
         if (raw_input(u"Do you want me to create one? [Yn] ").lower()
             in ("y", "",)):
             cls.create_db(db_path)
-            return cls(db_path)
+            print u"Created tasks database at %s" % db_path
+            return cls(db_path, **kwargs)
         raise TaskError(u"Operation cancelled.")
 
     @classmethod
@@ -47,7 +52,6 @@ class TaskCollection(deque):
         except IOError, err:
             raise TaskError(u"Unable to create tasks database at %s: %s"
                             % (db_path, err))
-        print u"Created tasks database at %s" % db_path
 
     def add(self, task):
         "Adds a new task to the collection while keeping current active one."
@@ -65,7 +69,7 @@ class TaskCollection(deque):
         else:
             self.append(task)
         self.update_db()
-        print u'Task "%s" added' % task
+        self.notify(u'Task "%s" added' % task)
 
     def done(self):
         "Marks current active task as done."
@@ -75,14 +79,19 @@ class TaskCollection(deque):
             raise TaskError(u"Empty task list.")
         shuffle(self)
         self.update_db()
-        print u'Task "%s" marked as done' % task
+        self.notify(u'Task "%s" marked as done' % task)
 
     def get(self):
         "Retrieves current active task."
         if len(self) == 0:
             raise TaskError(u"No tasks.")
-        print self[0]
+        self.notify(self[0])
         return self[0]
+
+    def notify(self, message):
+        "Writes a message to stdout interface, if any has been provided."
+        if self.stdout is not None:
+            self.stdout.write("%s\n" % message)
 
     def update_db(self):
         "Updates the task db with current data."
