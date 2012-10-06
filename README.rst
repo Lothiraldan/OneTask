@@ -41,7 +41,7 @@ If you try to get another task, you will get the same one.
     $> onetask get
     Empty task list.
 
-Sometimes you may want to comtemplate done work:
+Sometimes you may want to contemplate accomplished work:
 
     $> onetask history
 
