@@ -41,7 +41,12 @@ If you try to get another task, you will get the same one.
     $> onetask get
     Empty task list.
 
-Sometimes you may want to contemplate accomplished work:
+Sometimes you may want to skip this horrible task you *know* you can't do right now, but want to keep in the list:
+
+    $> onetask skip
+    Switched from "task2" to "task3", good luck.
+
+Last, you probably feel like contemplating accomplished work:
 
     $> onetask history
 

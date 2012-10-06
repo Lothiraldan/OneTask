@@ -34,6 +34,9 @@ def get_args(args_list):
     done_subparser = subparsers.add_parser('done',
         help='mark active task as done')
     done_subparser.set_defaults(func=tasks.done)
+    skip_subparser = subparsers.add_parser('skip',
+        help='skip current active task')
+    skip_subparser.set_defaults(func=tasks.skip)
     test_subparser = subparsers.add_parser('test',
         help='launch test suite')
     test_subparser.set_defaults(func=test)

@@ -64,6 +64,18 @@ class TaskCollectionTest(unittest.TestCase):
         self.assertEquals(tasks.archive[0]['title'], 'task2')
         self.assertEquals(tasks.archive[1]['title'], 'task1')
 
+    def test_skip(self):
+        tasks = self._load(tasks=[{"title": "task1"},
+                                  {"title": "task2"},
+                                  {"title": "task3"}])
+        self.assertEquals(tasks.get(), 'task1')
+        tasks.skip()
+        self.assertEquals(tasks.get(), 'task2')
+        tasks.skip()
+        self.assertEquals(tasks.get(), 'task3')
+        tasks.skip()
+        self.assertEquals(tasks.get(), 'task1')
+
 
 if __name__ == '__main__':
     unittest.main()

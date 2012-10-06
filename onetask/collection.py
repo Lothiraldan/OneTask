@@ -116,6 +116,18 @@ class TaskCollection(object):
         if self.stdout is not None:
             self.stdout.write("%s\n" % message)
 
+    def skip(self):
+        "Skips current active task and pull another one."
+        if len(self.tasks) == 0:
+            raise TaskError(u"No active task.")
+        if len(self.tasks) == 1:
+            raise TaskError(u"Only one task is available. Go shopping.")
+        old = self.tasks[0]['title']
+        new = list(self.tasks)[1:2][0]['title']
+        self.tasks.rotate(-1)
+        self.update_db()
+        self.notify(u'Switched from "%s" to "%s", good luck.' % (old, new))
+
     def update_db(self):
         "Updates the task db with current data."
         try:
