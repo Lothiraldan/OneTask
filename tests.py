@@ -33,13 +33,14 @@ class TaskCollectionTest(unittest.TestCase):
         self.assertEquals(tasks[0], 'task1')
 
     def test_get(self):
-        tasks = self._load([])
-        tasks.add('task1')
-        self.assertEquals(tasks.get(), 'task1')
-        tasks.add('task2')
-        self.assertEquals(tasks.get(), 'task1')
-        tasks.add('task3')
-        self.assertEquals(tasks.get(), 'task1')
+        tasks = self._load(["task1"])
+        for x in xrange(2, 100):
+            tasks.add('task%d' % x)
+            self.assertEqual(len(tasks), x)
+            self.assertEquals(tasks.get(), 'task1')
+        tasks.done()
+        self.assertEqual(len(tasks), x - 1)
+        self.assertNotEquals(tasks.get(), 'task1')
 
     def test_done(self):
         tasks = self._load([])
