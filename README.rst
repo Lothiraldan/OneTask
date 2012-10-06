@@ -3,6 +3,21 @@ OneTask: Manage task, one task at the time
 
 **OneTask** let you focus on one task at the time, avoiding discouragement by seing all the remaining work to do.
 
+Requirements
+------------
+
+There's none expect a working Python 2.6+ installation.
+
+Installation
+------------
+
+Right now installation is done using ``git``::
+
+    $> git clone https://github.com/Lothiraldan/OneTask.git
+    $> python OneTask/setup.py install
+
+Expect a Pypi package soon though.
+
 QuickStart
 ----------
 
@@ -29,11 +44,11 @@ If you try to get another task, you will get the same one.
 Tests
 -----
 
-To run OneTask's test suite, a dedicated command is available:
+To run OneTask's test suite, a dedicated command is available::
 
     $> onetask test
 
-In case something fails, feel free to [open an issue about it](https://github.com/Lothiraldan/OneTask/issues/new).
+In case anything fails, feel free to `open an issue about it <https://github.com/Lothiraldan/OneTask/issues/new>`_.
 
 Features
 --------
