@@ -6,7 +6,7 @@ import time
 
 import utils
 
-from collections import deque, namedtuple
+from collections import namedtuple
 from random import shuffle
 
 
@@ -16,8 +16,6 @@ class TaskError(RuntimeError):
 
 class TaskCollection(object):
     """Tasks collection object."""
-    tasks = deque()
-    archive = deque()
 
     def __init__(self, db_path, stdout=None):
         assert os.path.exists(db_path)
@@ -27,12 +25,10 @@ class TaskCollection(object):
         self.stdout = stdout
         # load tasks
         try:
-            tasks_data = json.load(open(self.db_path, 'r'))
+            self.data = json.load(open(self.db_path, 'r'))
         except (IOError, ValueError,), err:
             raise TaskError(u"Unable to load tasks from db %s: %s"
                             % (self.db_path, err,))
-        self.tasks = deque(tasks_data.get('tasks', []))
-        self.archive = deque(tasks_data.get('archive', []))
 
     @classmethod
     def load(cls, db_path, **kwargs):
@@ -55,7 +51,7 @@ class TaskCollection(object):
         assert not os.path.exists(db_path)
         try:
             db_file = open(db_path, 'w')
-            db_file.write(json.dumps(dict(tasks=[], archive=[]), indent=4))
+            db_file.write(json.dumps(dict(tasks=[], archive=[], current=None)))
             db_file.close()
         except IOError, err:
             raise TaskError(u"Unable to create tasks database at %s: %s"
@@ -63,42 +59,41 @@ class TaskCollection(object):
 
     def add(self, title, created=None):
         "Adds a new task to the collection while keeping current active one."
-        if title in [t['title'] for t in self.tasks]:
+        if title in [t['title'] for t in self.data['tasks']]:
             raise TaskError(u'Task "%s" already exists.' % title)
         task = dict(title=title, created=created or time.time())
-        if len(self.tasks) > 0:
-            # pop current active task
-            active = self.tasks.popleft()
-            # shuffle rest
-            shuffle(self.tasks)
-            # add new task
-            self.tasks.append(task)
-            # restore active tasks
-            self.tasks.appendleft(active)
-        else:
-            self.tasks.append(task)
+
+        self.data['tasks'].append(task)
+
         self.update_db()
         self.notify(u'Task "%s" added' % title)
 
     def done(self, closed=None):
         "Marks current active task as done."
-        try:
-            task = self.tasks.popleft()
-        except IndexError:
-            raise TaskError(u"Empty task list.")
-        shuffle(self.tasks)
+        if self.data['current'] is None:
+            raise TaskError(u"No task selected.")
+        task = self.data['current']
+
         task['closed'] = closed or time.time()
         task['duration'] = task['closed'] - task['created']
-        self.archive.appendleft(task)
+        self.data['archive'].append(task)
+        self.data['current'] = None
+
         self.update_db()
         self.notify(u'Task "%s" marked as done. Completion occured in %s.'
                     % (task['title'], utils.format_duration(task['duration']),))
 
     def get(self):
         "Retrieves current active task."
-        if len(self.tasks) == 0:
-            raise TaskError(u"No tasks.")
-        title = self.tasks[0]['title']
+        if self.data['current'] is None:
+            if len(self.data['tasks']) == 0:
+                raise TaskError(u"No tasks.")
+
+            shuffle(self.data['tasks'])
+            self.data['current'] = self.data['tasks'].pop()
+
+            self.update_db()
+        title = self.data['current']['title']
         self.notify(title)
         return title
 
@@ -107,7 +102,7 @@ class TaskCollection(object):
         Row = namedtuple('row', ['Created', 'Closed', 'Duration', 'Task'])
         rows = []
         durations = []
-        for task in self.archive:
+        for task in self.data['archive']:
             rows.append(Row(Created=utils.format_timestamp(task['created']),
                             Closed=utils.format_timestamp(task['closed']),
                             Duration=utils.format_duration(task['duration']),
@@ -130,23 +125,25 @@ class TaskCollection(object):
 
     def skip(self):
         "Skips current active task and pull another one."
-        if len(self.tasks) == 0:
+        if self.data['current'] is None:
             raise TaskError(u"No active task.")
-        if len(self.tasks) == 1:
+        if len(self.data['tasks']) == 0:
             raise TaskError(u"Only one task is available. Go shopping.")
-        old = self.tasks[0]['title']
-        new = list(self.tasks)[1:2][0]['title']
-        self.tasks.rotate(-1)
+        old = self.data['current']
+
+        shuffle(self.data['tasks'])
+        self.data['current'] = self.data['tasks'].pop()
+        self.data['tasks'].append(old)
+        new = self.data['current']['title']
+
         self.update_db()
-        self.notify(u'Switched from "%s" to "%s", good luck.' % (old, new))
+        self.notify(u'Switched from "%s" to "%s", good luck.' % (old['title'], new))
 
     def update_db(self):
         "Updates the task db with current data."
         try:
             db_file = open(self.db_path, 'w')
-            db_file.write(json.dumps(dict(tasks=list(self.tasks),
-                                          archive=list(self.archive)),
-                          indent=4))
+            db_file.write(json.dumps(self.data))
             db_file.close()
         except IOError, err:
             raise TaskError(u"Unable to save tasks database, sorry: %s" % err)
