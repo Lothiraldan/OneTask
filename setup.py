@@ -7,5 +7,5 @@ setup(
     long_description='Manage your tasks, one task at a time',
     requires=[],
     packages=['onetask'],
-    scripts=['onetask/onetask']
+    scripts=['bin/onetask']
 )
