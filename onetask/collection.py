@@ -1,4 +1,6 @@
+import functools
 import json
+import operator
 import os
 import time
 
@@ -104,12 +106,22 @@ class TaskCollection(object):
         "Generates a tasks completion report."
         Row = namedtuple('row', ['Created', 'Closed', 'Duration', 'Task'])
         rows = []
+        durations = []
         for task in self.archive:
             rows.append(Row(Created=utils.format_timestamp(task['created']),
                             Closed=utils.format_timestamp(task['closed']),
                             Duration=utils.format_duration(task['duration']),
                             Task=task['title']))
+            durations.append(float(task['duration']))
         self.notify(utils.pprinttable(rows))
+        self.notify("")
+        average = functools.reduce(operator.add, durations) / len(durations)
+        self.notify("Average task completion time: %s"
+                    % utils.format_duration(average))
+        self.notify("Longest:                      %s"
+                    % utils.format_duration(max(durations)))
+        self.notify("Shortest:                     %s"
+                    % utils.format_duration(min(durations)))
 
     def notify(self, message):
         "Writes a message to stdout interface, if any has been provided."
