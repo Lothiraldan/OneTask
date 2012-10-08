@@ -24,7 +24,7 @@ class TaskCollectionTest(unittest.TestCase):
     def assertCommandOK(self, command):
         try:
             check_output(command)
-        except CalledProcessError, err:
+        except CalledProcessError as err:
             raise AssertionError('Command is not ok: ' % err)
 
     def assertCommandKO(self, command):
