@@ -6,6 +6,7 @@ OneTask: Manage task, one task at the time
 Build status: |build_status|
 
 .. |build_status| image:: https://secure.travis-ci.org/Lothiraldan/OneTask.png
+    :target: http://travis-ci.org/Lothiraldan/OneTask
 
 Requirements
 ------------
