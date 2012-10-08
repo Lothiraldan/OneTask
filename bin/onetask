@@ -50,11 +50,11 @@ if __name__ == '__main__':
     args = get_args(sys.argv[1:])
     try:
         if args.func == tasks.add:
-            args.func(unicode(args.task, "utf-8"))
+            args.func(str(args.task, "utf-8"))
         else:
             args.func()
     except AttributeError:
         pass
-    except TaskError, err:
+    except TaskError as err:
         sys.stderr.write(str(err) + "\n")
         sys.exit(1)
