@@ -10,7 +10,7 @@ from .collection import TaskCollection
 class TaskCollectionTest(unittest.TestCase):
     def _load(self, **kwargs):
         temp = tempfile.NamedTemporaryFile(prefix='onetasktest', suffix='.json')
-        temp.write(json.dumps(dict(**kwargs)))
+        temp.write(bytes(json.dumps(dict(**kwargs)), 'UTF-8'))
         temp.read()
         return TaskCollection.load(temp.name)
 
