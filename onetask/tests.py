@@ -24,7 +24,7 @@ class TaskCollectionTest(unittest.TestCase):
     def assertCommandOK(self, command):
         try:
             check_output(command)
-        except CalledProcessError, err:
+        except CalledProcessError as err:
             raise AssertionError('Command is not ok: ' % err)
 
     def assertCommandKO(self, command):
@@ -101,10 +101,9 @@ class TaskCollectionTest(unittest.TestCase):
         os.environ['ONETASK_DB'] = tmp_path
         executable = os.path.abspath(os.path.join(os.path.dirname(__file__),
             '..', 'bin', 'onetask'))
-        # these calls will raise CalledProcessError in case of non-0 status code
         self.assertCommandOK([executable])
         self.assertCommandOK([executable, 'add', 'plop'])
-        self.assertEquals(check_output([executable, 'get']), 'plop\n')
+        self.assertEquals(check_output([executable, 'get']), b'plop\n')
         self.assertCommandOK([executable, 'done'])
         self.assertCommandKO([executable, 'get'])
 
