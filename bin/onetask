@@ -9,8 +9,8 @@ from onetask.collection import TaskCollection, TaskError
 from onetask.tests import TaskCollectionTest
 
 
-TASKS_DATABASE = os.path.expanduser('~/.OneTask.json')
-
+TASKS_DATABASE = os.environ.get('ONETASK_DB',
+                                os.path.expanduser('~/.OneTask.json'))
 
 def test():
     suite = unittest.TestLoader().loadTestsFromTestCase(TaskCollectionTest)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     args = get_args(sys.argv[1:])
     try:
         if args.func == tasks.add:
-            args.func(str(args.task, "utf-8"))
+            args.func(str(args.task))
         else:
             args.func()
     except AttributeError:

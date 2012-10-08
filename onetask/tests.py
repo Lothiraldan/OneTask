@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 
+import os
 import json
 import tempfile
 import unittest
 
 from .collection import TaskCollection
+from subprocess import check_output, CalledProcessError
 
 
 class TaskCollectionTest(unittest.TestCase):
-    def _load(self, **kwargs):
+    def _create_db(self, **kwargs):
         temp = tempfile.NamedTemporaryFile(prefix='onetasktest', suffix='.json',
-            mode='w+t')
+            mode='w+t', delete=False)
         temp.write(json.dumps(dict(**kwargs)))
         temp.read()
+        return temp
+
+    def _load(self, **kwargs):
+        temp = self._create_db(**kwargs)
         return TaskCollection.load(temp.name)
 
     def test_load(self):
@@ -80,6 +86,17 @@ class TaskCollectionTest(unittest.TestCase):
             self.assertNotEquals(current, new)
             current = new
 
+    def test_cli(self):
+        tmp_path = self._create_db(current=None, tasks=[], archive=[]).name
+        os.environ['ONETASK_DB'] = tmp_path
+        executable = os.path.abspath(os.path.join(os.path.dirname(__file__),
+            '..', 'bin', 'onetask'))
+        # these calls will raise CalledProcessError in case of non-0 status code
+        check_output([executable])
+        check_output([executable, 'add', 'plop'])
+        self.assertEquals(check_output([executable, 'get']), 'plop\n')
+        check_output([executable, 'done'])
+        self.assertRaises(CalledProcessError, check_output, [executable, 'get'])
 
 if __name__ == '__main__':
     unittest.main()
