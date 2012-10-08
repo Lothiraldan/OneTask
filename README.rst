@@ -3,10 +3,14 @@ OneTask: Manage task, one task at the time
 
 **OneTask** let you focus on one task at the time, avoiding discouragement by seing all the remaining work to do.
 
+Build status: |build_status|
+
+.. |build_status| image:: https://secure.travis-ci.org/Lothiraldan/OneTask.png
+
 Requirements
 ------------
 
-There's none expect a working Python 2.7+ installation.
+There's none expect a working Python 2.7+ or 3.2+ installation.
 
 Installation
 ------------
