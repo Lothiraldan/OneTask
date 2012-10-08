@@ -4,3 +4,6 @@ python:
   - "3.2"
 # command to run tests
 script: nosetests
+before_script:
+  - "export PYTHONPATH=.:$PYTHONPATH"
+
