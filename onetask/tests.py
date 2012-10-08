@@ -9,8 +9,9 @@ from .collection import TaskCollection
 
 class TaskCollectionTest(unittest.TestCase):
     def _load(self, **kwargs):
-        temp = tempfile.NamedTemporaryFile(prefix='onetasktest', suffix='.json')
-        temp.write(bytes(json.dumps(dict(**kwargs)), 'UTF-8'))
+        temp = tempfile.NamedTemporaryFile(prefix='onetasktest', suffix='.json',
+            mode='w+t')
+        temp.write(json.dumps(dict(**kwargs)))
         temp.read()
         return TaskCollection.load(temp.name)
 
