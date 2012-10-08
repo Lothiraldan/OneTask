@@ -21,6 +21,16 @@ class TaskCollectionTest(unittest.TestCase):
         temp = self._create_db(**kwargs)
         return TaskCollection.load(temp.name)
 
+    def assertCommandOK(self, command):
+        try:
+            check_output(command)
+        except CalledProcessError, err:
+            raise AssertionError('Command is not ok: ' % err)
+
+    def assertCommandKO(self, command):
+        assert isinstance(command, (list, tuple,))
+        self.assertRaises(CalledProcessError, check_output, command)
+
     def test_load(self):
         tasks = self._load(tasks=[{"title": "task1"}, {"title": "task2"}])
         self.assertEquals(len(tasks.data['tasks']), 2)
@@ -92,11 +102,11 @@ class TaskCollectionTest(unittest.TestCase):
         executable = os.path.abspath(os.path.join(os.path.dirname(__file__),
             '..', 'bin', 'onetask'))
         # these calls will raise CalledProcessError in case of non-0 status code
-        check_output([executable])
-        check_output([executable, 'add', 'plop'])
+        self.assertCommandOK([executable])
+        self.assertCommandOK([executable, 'add', 'plop'])
         self.assertEquals(check_output([executable, 'get']), 'plop\n')
-        check_output([executable, 'done'])
-        self.assertRaises(CalledProcessError, check_output, [executable, 'get'])
+        self.assertCommandOK([executable, 'done'])
+        self.assertCommandKO([executable, 'get'])
 
 if __name__ == '__main__':
     unittest.main()
