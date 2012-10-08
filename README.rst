@@ -6,7 +6,7 @@ OneTask: Manage task, one task at the time
 Requirements
 ------------
 
-There's none expect a working Python 2.6+ installation.
+There's none expect a working Python 2.7+ installation.
 
 Installation
 ------------
