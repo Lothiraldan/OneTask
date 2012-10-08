@@ -4,7 +4,7 @@ import operator
 import os
 import time
 
-import utils
+from . import utils
 
 from collections import namedtuple
 from random import shuffle
@@ -26,8 +26,8 @@ class TaskCollection(object):
         # load tasks
         try:
             self.data = json.load(open(self.db_path, 'r'))
-        except (IOError, ValueError,), err:
-            raise TaskError(u"Unable to load tasks from db %s: %s"
+        except (IOError, ValueError,) as err:
+            raise TaskError("Unable to load tasks from db %s: %s"
                             % (self.db_path, err,))
 
     @classmethod
@@ -37,13 +37,13 @@ class TaskCollection(object):
         """
         if os.path.exists(db_path):
             return cls(db_path, **kwargs)
-        print u"No OneTask database file found at %s" % db_path
-        if (raw_input(u"Do you want me to create one? [Yn] ").lower()
+        print("No OneTask database file found at %s" % db_path)
+        if (input("Do you want me to create one? [Yn] ").lower()
             in ("y", "",)):
             cls.create_db(db_path)
-            print u"Created tasks database at %s" % db_path
+            print("Created tasks database at %s" % db_path)
             return cls(db_path, **kwargs)
-        raise TaskError(u"Operation cancelled.")
+        raise TaskError("Operation cancelled.")
 
     @classmethod
     def create_db(cls, db_path):
@@ -53,25 +53,25 @@ class TaskCollection(object):
             db_file = open(db_path, 'w')
             db_file.write(json.dumps(dict(tasks=[], archive=[], current=None)))
             db_file.close()
-        except IOError, err:
-            raise TaskError(u"Unable to create tasks database at %s: %s"
+        except IOError as err:
+            raise TaskError("Unable to create tasks database at %s: %s"
                             % (db_path, err))
 
     def add(self, title, created=None):
         "Adds a new task to the collection while keeping current active one."
         if title in [t['title'] for t in self.data['tasks']]:
-            raise TaskError(u'Task "%s" already exists.' % title)
+            raise TaskError('Task "%s" already exists.' % title)
         task = dict(title=title, created=created or time.time())
 
         self.data['tasks'].append(task)
 
         self.update_db()
-        self.notify(u'Task "%s" added' % title)
+        self.notify('Task "%s" added' % title)
 
     def done(self, closed=None):
         "Marks current active task as done."
         if self.data['current'] is None:
-            raise TaskError(u"No task selected.")
+            raise TaskError("No task selected.")
         task = self.data['current']
 
         task['closed'] = closed or time.time()
@@ -80,14 +80,14 @@ class TaskCollection(object):
         self.data['current'] = None
 
         self.update_db()
-        self.notify(u'Task "%s" marked as done. Completion occured in %s.'
+        self.notify('Task "%s" marked as done. Completion occured in %s.'
                     % (task['title'], utils.format_duration(task['duration']),))
 
     def get(self):
         "Retrieves current active task."
         if self.data['current'] is None:
             if len(self.data['tasks']) == 0:
-                raise TaskError(u"No tasks.")
+                raise TaskError("No tasks.")
 
             shuffle(self.data['tasks'])
             self.data['current'] = self.data['tasks'].pop()
@@ -126,9 +126,9 @@ class TaskCollection(object):
     def skip(self):
         "Skips current active task and pull another one."
         if self.data['current'] is None:
-            raise TaskError(u"No active task.")
+            raise TaskError("No active task.")
         if len(self.data['tasks']) == 0:
-            raise TaskError(u"Only one task is available. Go shopping.")
+            raise TaskError("Only one task is available. Go shopping.")
         old = self.data['current']
 
         shuffle(self.data['tasks'])
@@ -137,7 +137,7 @@ class TaskCollection(object):
         new = self.data['current']['title']
 
         self.update_db()
-        self.notify(u'Switched from "%s" to "%s", good luck.' % (old['title'], new))
+        self.notify('Switched from "%s" to "%s", good luck.' % (old['title'], new))
 
     def update_db(self):
         "Updates the task db with current data."
@@ -145,5 +145,5 @@ class TaskCollection(object):
             db_file = open(self.db_path, 'w')
             db_file.write(json.dumps(self.data))
             db_file.close()
-        except IOError, err:
-            raise TaskError(u"Unable to save tasks database, sorry: %s" % err)
+        except IOError as err:
+            raise TaskError("Unable to save tasks database, sorry: %s" % err)

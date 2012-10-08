@@ -38,7 +38,7 @@ def pprinttable(rows):
         lens = []
         for i in range(len(rows[0])):
             lens.append(len(max([x[i] for x in rows] + [headers[i]],
-                key=lambda x: len(unicode(x)))))
+                key=lambda x: len(str(x)))))
         formats = []
         hformats = []
         for i in range(len(rows[0])):
@@ -47,9 +47,9 @@ def pprinttable(rows):
             else:
                 formats.append("%%-%ds" % lens[i])
             hformats.append("%%-%ds" % lens[i])
-        pattern = u" | ".join(formats)
-        hpattern = u" | ".join(hformats)
-        separator = u"-+-".join(['-' * n for n in lens])
+        pattern = " | ".join(formats)
+        hpattern = " | ".join(hformats)
+        separator = "-+-".join(['-' * n for n in lens])
         lines.append(separator)
         lines.append(hpattern % tuple(headers))
         lines.append(separator)
@@ -60,5 +60,5 @@ def pprinttable(rows):
         row = rows[0]
         hwidth = len(max(row._fields, key=lambda x: len(x)))
         for i in range(len(row)):
-            lines.append(u"%*s = %s" % (hwidth, row._fields[i], row[i]))
+            lines.append("%*s = %s" % (hwidth, row._fields[i], row[i]))
     return "\n".join(lines)

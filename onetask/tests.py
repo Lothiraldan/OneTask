@@ -4,7 +4,7 @@ import json
 import tempfile
 import unittest
 
-from collection import TaskCollection
+from .collection import TaskCollection
 
 
 class TaskCollectionTest(unittest.TestCase):
@@ -36,7 +36,7 @@ class TaskCollectionTest(unittest.TestCase):
         tasks = self._load(tasks=[{"title": "task1", "created": 1000}],
             current=None, archive=[])
         self.assertEqual(tasks.get(), 'task1')
-        for x in xrange(2, 100):
+        for x in range(2, 100):
             tasks.add('task%d' % x)
             self.assertEqual(len(tasks.data['tasks']), x - 1)
             self.assertEquals(tasks.get(), 'task1')
